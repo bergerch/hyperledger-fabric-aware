@@ -119,7 +119,7 @@ public class BFTProxy {
         BFTCommon.init(crypto);
         
         ECDSAKeyLoader loader = new ECDSAKeyLoader(frontendID, configDir, crypto.getProperties().getProperty(Config.SIGNATURE_ALGORITHM));
-        sysProxy = new ProxyReplyListener(frontendID, configDir, loader, Security.getProvider("BC"));        
+        sysProxy = new ProxyReplyListener(frontendID, configDir, loader);
         
         try {
             
@@ -306,7 +306,7 @@ public class BFTProxy {
                     return null;
                 }
                 
-            }, Security.getProvider("BC"));
+            });
             
         }
         

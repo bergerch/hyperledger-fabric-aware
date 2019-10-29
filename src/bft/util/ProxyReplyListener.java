@@ -66,15 +66,15 @@ public class ProxyReplyListener extends AsynchServiceProxy {
         init();
     }
     
-    public ProxyReplyListener(int id, String configHome, KeyLoader loader, Provider provider) {
-        super(id, configHome, loader, provider);
+    public ProxyReplyListener(int id, String configHome, KeyLoader loader) {
+        super(id, configHome, loader);
         this.id = id;
         init();
     }
     
     public ProxyReplyListener(int id, String configHome,
-            Comparator<byte[]> replyComparator, Extractor replyExtractor, KeyLoader loader, Provider provider) {
-        super(id, configHome, replyComparator, replyExtractor, loader, provider);
+            Comparator<byte[]> replyComparator, Extractor replyExtractor, KeyLoader loader) {
+        super(id, configHome, replyComparator, replyExtractor, loader);
         this.id = id;
         init();
     }
