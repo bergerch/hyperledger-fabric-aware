@@ -138,7 +138,7 @@ public class BFTNode extends DefaultRecoverable {
         BFTCommon.init(crypto);
         
         ECDSAKeyLoader loader = new ECDSAKeyLoader(this.id, this.configDir, this.crypto.getProperties().getProperty(Config.SIGNATURE_ALGORITHM));
-        this.replicaConf = new TOMConfiguration(this.id, this.configDir, loader, Security.getProvider("BC"));
+        this.replicaConf = new TOMConfiguration(this.id, this.configDir, loader);
         
         loadConfig();
 
@@ -187,7 +187,7 @@ public class BFTNode extends DefaultRecoverable {
                     }
                 }
 
-            }, loader, Security.getProvider("BC"));
+            }, loader);
                 
         this.replicaLock.lock();
         this.replicaReady.signalAll();
@@ -257,7 +257,7 @@ public class BFTNode extends DefaultRecoverable {
         if (System.getProperty("logback.configurationFile") == null)
             System.setProperty("logback.configurationFile", configDir + "logback.xml");
                 
-        Security.addProvider(new BouncyCastleProvider());
+       // Security.addProvider(new BouncyCastleProvider());
         
         new BFTNode(Integer.parseInt(args[0]));
     }
