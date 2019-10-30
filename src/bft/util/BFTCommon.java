@@ -10,19 +10,8 @@ import bftsmart.tom.util.TOMUtil;
 import com.google.protobuf.ByteString;
 import com.google.protobuf.InvalidProtocolBufferException;
 import com.google.protobuf.Timestamp;
-import java.io.BufferedReader;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.DataInput;
-import java.io.DataInputStream;
-import java.io.DataOutput;
-import java.io.DataOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.StringWriter;
+
+import java.io.*;
 import java.security.GeneralSecurityException;
 import java.security.InvalidKeyException;
 import java.security.KeyPair;
@@ -760,23 +749,28 @@ public class BFTCommon {
     public static byte[][] deserializeContents(byte[] bytes) throws IOException {
         
         byte[][] batch = null;
-        
+
+
         ByteArrayInputStream bis = new ByteArrayInputStream(bytes);
         DataInputStream in = new DataInputStream(bis);
-        int nContents =  in.readInt();
-        batch = new byte[nContents][];
-        
-        for (int i = 0; i < nContents; i++) {
-            
-            int length = in.readInt();
+        try {
+            int nContents = in.readInt();
+            batch = new byte[nContents][];
 
-            batch[i] = new byte[length];
-            in.read(batch[i]);
+            for (int i = 0; i < nContents; i++) {
+
+                int length = in.readInt();
+
+                batch[i] = new byte[length];
+                in.read(batch[i]);
+            }
+        } catch (EOFException e) {
+            //System.out.println("EOF);
+        } finally {
+            in.close();
+            bis.close();
         }
-        in.close();
-        bis.close();
- 
-        
+
         return batch;
     }
     

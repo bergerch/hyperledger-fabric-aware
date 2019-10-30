@@ -118,6 +118,9 @@ public class ProxyReplyListener extends AsynchServiceProxy {
         
         try {
             byte[][] contents = BFTCommon.deserializeContents(bytes);
+
+            if (contents == null) return -1;
+
             
             return ((new String(contents[0])).equals("SEQUENCE") ? ByteBuffer.wrap(contents[1]).getInt() : -1);
             
