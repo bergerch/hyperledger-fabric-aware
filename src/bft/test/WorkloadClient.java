@@ -169,7 +169,7 @@ public class WorkloadClient {
         for (int o : recvs) {
             if (o == frontendID) {
                 
-                proxy = new ProxyReplyListener(frontendID, configDir, loader, Security.getProvider("BC"));
+                proxy = new ProxyReplyListener(frontendID, configDir, loader);
                 
                 break;
             }
@@ -208,7 +208,7 @@ public class WorkloadClient {
                     return null;
                 }
                 
-            }, Security.getProvider("BC"));            
+            });
             this.count = 0;            
         }
 
