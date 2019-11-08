@@ -12,14 +12,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-
-############################################
-####### Fault Model Configurations   #######
-############################################
-
-#This sets if the system will function in Byzantine or crash-only mode. Set to "true" to support Byzantine faults
-system.bft = true
-
 ############################################
 ####### Communication Configurations #######
 ############################################
@@ -27,8 +19,8 @@ system.bft = true
 #HMAC algorithm used to authenticate messages between processes ('HmacSHA512' is the default value)
 system.communication.hmacAlgorithm = HmacSHA512
 
-#Algorithm to generate secret keys used to generate MACs ('PBKDF2WithHmacSHA1' is the default value)
-system.communication.secretKeyAlgorithm = PBKDF2WithHmacSHA1
+#Algorithm to generate secret keys used to generate MACs ('PBEWithSHA1AndDES' is the default value)
+system.communication.secretKeyAlgorithm = PBEWithSHA1AndDES
 
 #Signature algorithm used to verify clients requests and to perform the authenticated Diffie-Hellman exchange during
 #replica start-up ('SHA512withRSA' is the default value). This parameter is overriden in the event that a custom key loader is supplied
@@ -37,53 +29,36 @@ system.communication.signatureAlgorithm = SHA512withRSA
 # Algorithm used to compute hashes ('SHA-512' is the default value)
 system.communication.hashAlgorithm = SHA-512
 
-#HMAC algorithm provider ('SunJCE' is the default value)
-system.communication.hmacAlgorithmProvider = BC
-
-#Secret keys algorith provider ('SunJCE' is the default value)
-system.communication.secretKeyAlgorithmProvider = BC
-
-#Signature algorithm provider ('SunRsaSign' is the default value)
-system.communication.signatureAlgorithmProvider = BC
-
-#Hash algorithm provider ('SUN' is the default value)
-system.communication.hashAlgorithmProvider = BC
-
 #Specify if the communication system should use a thread to send data (true or false)
 system.communication.useSenderThread = true
 
 #Force all processes to use the same public/private keys pair and secret key. This is useful when deploying experiments
-#and benchmarks, but must not be used in production systems. This parameter will only work with the default key loader.
-system.communication.defaultkeys = true
+#and benchmarks, but must not be used in production systems.
+system.communication.defaultkeys = false
 
-#IP address this replica should bind to. If this parameter does not have a valid ip address,
-#the replica will fetch the host address on its own. If config/hosts.config specifies the
-#loopback address for the host machine, this parameter is overriden by that
-system.communication.bindaddress = auto
+#IP address this replica should use when binding Netty's server bootstrap. If this parameter does not have a valid ip address,
+#the replica will fetch the host address on its own
+system.communication.nettybindaddress = auto
 
 ############################################
 ### Replication Algorithm Configurations ###
 ############################################
 
 #Number of servers in the group 
-system.servers.num = 5
+system.servers.num = 4
 
 #Maximum number of faulty replicas 
-system.servers.f = 1  
+system.servers.f = 1
 
-#Timeout to asking for a client request. This value should be greater than the batch timeout
-system.totalordermulticast.timeout = 2000
+#Timeout to asking for a client request
+system.totalordermulticast.timeout = 5000
 
-#Batch timeout. If set to any non-positive integer value, the next consensus instance
-#is triggered as soon as (1) the previous one is finished, and (2) any number new requests arrive,
-#without waiting to accumulate more requests for the batch. This value should be lower than the request timeout
-system.totalordermulticast.batchtimeout = -1
 
 #Maximum batch size (in number of messages)
 system.totalordermulticast.maxbatchsize = 400  
 
 #Number of nonces (for non-determinism actions) generated
-system.totalordermulticast.nonces = 10  
+system.totalordermulticast.nonces = 20  
 
 #if verification of leader-generated timestamps are increasing 
 #it can only be used on systems in which the network clocks
@@ -99,8 +74,11 @@ system.communication.outQueueSize = 500000
 #Set to 1 if SMaRt should use signatures, set to 0 if otherwise
 system.communication.useSignatures = 0
 
-#Set to 1 if clients should use MAC vectors, set to 0 if otherwise
-system.communication.useMACs = 1
+#Set to 1 if SMaRt should use MAC's, set to 0 if otherwise
+system.communication.useMACs = 0
+
+#Set to 1 if SMaRt should use the standard output to display debug messages, set to 0 if otherwise
+system.debug = 0
 
 #Print information about the replica when it is shutdown
 system.shutdownhook = true
@@ -108,13 +86,6 @@ system.shutdownhook = true
 #Force all replicas to deliver to the application the same number of requests per batch.
 #This is not the same batch used during the ordering protocol
 system.samebatchsize = false
-
-#Set to 'macvector' to use MAC vectors in the consensus proof, 'signatures' to use digital signatures
-system.totalordermulticast.prooftype = signatures
-
-#Size of the thread pool that transmits replies to clients. If set to 0, no thread pool is used and this
-#done sequentially by the delivery thread instead.
-system.numrepliers = 10
 
 ############################################
 ###### State Transfer Configurations #######
@@ -153,62 +124,13 @@ system.totalordermulticast.sync_ckp = false
 ###### Reconfiguration Configurations ######
 ############################################
 
+#Replicas ID for the initial view, separated by a comma.
+# The number of replicas in this parameter should be equal to that specified in 'system.servers.num'
+system.initial.view = 0,1,2,3
+
 #The ID of the trust third party (TTP)
 system.ttp.id = 7002
 
-############################################
-######      WHEAT Configurations      ######
-############################################
-
-#This tells the system to used weighted quorums
-system.useweights = true
-
-#Replicas ID for the initial view, separated by a comma.
-#WHEAT: the first f (CFT) or 2f (BFT) entries obtain the weight Vmax and all others Vmin
-# The number of replicas in this parameter should be equal to that specified in 'system.servers.num'
-system.initial.view = 4,1,2,3,0
-
-# The replica selected to be the leader of the initial view
-system.initial.leader = 4
-
-############################################
-######       AWARE Configurations     ######
-############################################
-
-#Needs system.useweights for working
-system.dw.useDynamicWeights = true
-
-#Needs system.useweights for working
-system.dw.useLeaderSelection = true
-
-#server uses a distinct DUMMY_PROPOSE message for monitoring
-system.dw.useDummyPropose = true
-
-#server uses a distinct PROPOSE_RESPONSE message for monitoring
-#Must be true in BFT mode
-system.dw.useProposeResponse = false
-
-#server uses a distinct WRITE_RESPONSE message for monitoring
-#Must be true in BFT mode
-system.dw.useWriteResponse = true
-
-#Every x consensus, the calculation is triggered
-system.dw.calculationInterval = 500
-
-#optimization threshold: 1.00 : always switch to the best; else switch if current config latency is higher than optimization
-#goal times the best configs latency
-system.dw.optimizationGoal = 1.00
-
-#Monitoring interval: How many monitoring messages' latencies are being saved (window of last monitoring instances)
-system.dw.monitoringWindow = 500
-
-#Synchronization Period (ms)
-system.dw.synchronisationPeriod = 20000
-
-#Synchronization Delay (ms)
-system.dw.synchronisationDelay = 20000
-
-#server bound monitoring overhead by omega (double) in interval [0,1]
-#1 means, monitor every consensus, 0.67 means monitor roughly 2 out of 3 while 0.1 means every 10th consensus instance
-system.dw.monitoringOverhead = 1
+#This sets if the system will function in Byzantine or crash-only mode. Set to "true" to support Byzantine faults
+system.bft = true
 

@@ -41,7 +41,7 @@
   <logger name="bftsmart" level="INFO" />
   <logger name="bft" level="OFF" />
   <logger name="io.netty" level="OFF" />
-  <logger name="throughput" level="OFFF" >
+  <logger name="throughput" level="INFO" >
 
     <appender-ref ref="THROUGHPUT_FILE" />
   </logger>

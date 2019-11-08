@@ -159,18 +159,18 @@ public class MSPManager {
         
         public void evaluate(SignedData[] signedData, String channel, long timestamp) throws BFTCommon.BFTException {
             
-            logger.info("Evaluating policy " + getPath());
+            logger.debug("Evaluating policy " + getPath());
             
             boolean[] used = new boolean[signedData.length];
             Arrays.fill(used, Boolean.FALSE);
             BFTException ex = evaluate(deduplicate(channel, signedData), used, channel, timestamp);
             if (ex != null) {
                 
-                logger.info("Evaluation of policy " + getPath() + " failed: " + ex.getLocalizedMessage());
+                logger.debug("Evaluation of policy " + getPath() + " failed: " + ex.getLocalizedMessage());
                 throw ex;
             }
             
-            logger.info("Evaluation of policy " + getPath() + " succeeded");
+            logger.debug("Evaluation of policy " + getPath() + " succeeded");
             
         }
         
